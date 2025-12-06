@@ -34,12 +34,4 @@ export default async function handler(req, res) {
     // Send a 500 response on any exception
     res.status(500).json({ error: err.toString() });
   }
-}
-        return {
-            "statusCode": 200,
-            "headers": {"content-type": "application/json"},
-            "body": json.dumps({"text": text})
-        }
-
-    except Exception as e:
-        return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
+} // <--- THE FILE MUST END HERE (Line 37 in the log)
