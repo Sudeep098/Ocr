@@ -1,7 +1,10 @@
 {
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "framework": "nextjs",
   "functions": {
     "api/*.py": {
-      "runtime": "python3.11"
+      "runtime": "vercel-python@0.6.0"
     }
   }
 }
