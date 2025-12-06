@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/extract.js", "use": "@vercel/node" },
-    { "src": "public/**/*", "use": "@vercel/static" }
-  ]
+  "functions": {
+    "pages/api/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }
