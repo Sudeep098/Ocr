@@ -2,10 +2,8 @@
   "functions": {
     "pages/api/extract.js": {
       "maxDuration": 60,
-      "memory": 1024,
-      "bodyParser": {
-        "sizeLimit": "50mb"
-      }
+      "memory": 1024
+      // Remove the "bodyParser" block completely
     }
   }
 }
