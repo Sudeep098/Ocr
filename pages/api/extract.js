@@ -27,13 +27,14 @@ export default async function handler(req, res) {
       return res.json({ text: result.data.text });
     }
 
+    // Fallback for invalid type
     return res.status(400).json({ error: "Invalid file type" });
   } catch (err) {
     console.error(err);
+    // Send a 500 response on any exception
     res.status(500).json({ error: err.toString() });
   }
-}            return {"statusCode": 400, "body": json.dumps({"error": "Unsupported Content-Type"})}
-
+}
         return {
             "statusCode": 200,
             "headers": {"content-type": "application/json"},
