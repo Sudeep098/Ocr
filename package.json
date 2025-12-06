@@ -1,9 +1,16 @@
 {
   "name": "ocr-vercel",
   "version": "1.0.0",
-  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "pdf-parse": "^1.1.1",
-    "tesseract.js": "^4.0.2"
+    "tesseract.js": "^4.1.1"
   }
 }
