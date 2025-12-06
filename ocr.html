@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image/PDF Text Extractor</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    #container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    textarea { width: 100%; height: 250px; margin-top: 15px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; margin-top: 15px; border: none; border-radius: 8px; background: #4CAF50; color: white; font-size: 16px; cursor: pointer; }
+    button:hover { background: #45a049; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>Extract Text from Image or PDF</h2>
+    <input type="file" id="fileInput" accept="image/*,.pdf" />
+    <button onclick="extractText()">Extract Text</button>
+    <textarea id="output" placeholder="Extracted text will appear here..."></textarea>
+    <a id="downloadLink" href="#" download="extracted_text.txt" style="display:none;">Download Extracted Text</a>
+  </div>
+
+  <script>
+    async function extractText() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert('Please upload an image or PDF');
+
+      const output = document.getElementById('output');
+      output.value = 'Processing... Please wait...';
+
+      if (file.type === 'application/pdf') {
+        extractFromPDF(file, output);
+      } else {
+        extractFromImage(file, output);
+      }
+    }
+
+    async function extractFromImage(file, output) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const { data: { text } } = await Tesseract.recognize(reader.result, 'eng');
+        output.value = text;
+        showDownload(text);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function extractFromPDF(file, output) {
+      const pdfData = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument(pdfData).promise;
+      let finalText = '';
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map(item => item.str).join(' ');
+        finalText += strings + "\n";
+      }
+
+      output.value = finalText;
+      showDownload(finalText);
+    }
+
+    function showDownload(text) {
+      const link = document.getElementById('downloadLink');
+      const blob = new Blob([text], { type: 'text/plain' });
+      link.href = URL.createObjectURL(blob);
+      link.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
