@@ -2,9 +2,11 @@ import { readFile } from "fs/promises";
 import pdf from "pdf-parse";
 import Tesseract from "tesseract.js";
 
-// Next.js Configuration:
-// 1. Sets the maximum accepted request body size to 50MB, essential for large base64 files.
-// 2. Disables the default body parser so Next.js uses this custom config.
+// -----------------------------------------------------------------------
+// CRITICAL NEXT.JS CONFIGURATION:
+// This block tells the Next.js API server to accept a request body 
+// up to 50MB, essential for large base64 file uploads.
+// -----------------------------------------------------------------------
 export const config = {
   api: {
     bodyParser: {
@@ -12,8 +14,8 @@ export const config = {
     },
   },
 };
+// -----------------------------------------------------------------------
 
-// Main API Route Handler:
 export default async function handler(req, res) {
   // Check if the request method is POST
   if (req.method !== "POST") {
@@ -28,31 +30,29 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No file content provided" });
     }
 
-    // Convert the Base64 string back into a Buffer for processing
+    // Convert the Base64 string back into a Buffer
     const buffer = Buffer.from(file, "base64");
 
     // --- PDF Extraction ---
     if (type === "pdf") {
-      // NOTE: pdf-parse can be memory intensive
       const data = await pdf(buffer);
       return res.json({ text: data.text });
     }
 
-    // --- Image OCR Extraction (JPG, PNG, etc.) ---
+    // --- Image OCR Extraction ---
     if (type === "image") {
-      // Tesseract.recognize is CPU and memory intensive
       const result = await Tesseract.recognize(buffer, "eng");
       return res.json({ text: result.data.text });
     }
 
-    // Fallback if the client sends an unrecognized file type
+    // Fallback
     return res.status(400).json({ error: "Invalid file type. Must be 'pdf' or 'image'." });
 
   } catch (err) {
-    // Log the server-side error for debugging purposes
+    // Log the server-side error for debugging
     console.error("OCR API Error:", err);
     
-    // Return a structured JSON error response to the client
+    // Return a structured JSON error response
     res.status(500).json({ error: `Server Processing Error: ${err.toString()}` });
   }
 }
